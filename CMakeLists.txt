@@ -13,4 +13,5 @@ add_executable(dcm_simulator
     src/Dcm_Parser.cpp
     src/Dcm_Services.cpp
     src/Transport.cpp
+    src/EcuApp.cpp  
 )

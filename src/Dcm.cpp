@@ -36,6 +36,9 @@ Buffer Dcm::ProcessRequest(const Buffer& request)
 
         case 0x3E:
             return Dcm_Services::TesterPresent(request);
+        
+        case 0x27:
+            return Dcm_Services::SecurityAccess(request);
 
         default:
             return Dcm_Services::NegativeResponse(

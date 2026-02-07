@@ -13,7 +13,7 @@ public:
     static Buffer ECUReset(const Buffer& request);                   // 0x11
     static Buffer ReadDataByIdentifier(const Buffer& request);       // 0x22
     static Buffer TesterPresent(const Buffer& request);              // 0x3E
-
+    static Buffer SecurityAccess(const Buffer& request);             // 0x27
     /* Negative response generator */
     static Buffer NegativeResponse(Byte sid, NRC nrc);
 };
