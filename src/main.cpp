@@ -1,25 +1,39 @@
 #include "Dcm.h"
 #include "Transport.h"
 #include "EcuApp.h"
+#include "TcpTransport.h"
 #include <iostream>
-
 
 int main()
 {
+    // ECU power ON
+    EcuApp::Init();
+
+    // Initialize DCM
     Dcm::Init();
 
-    std::cout << "DCM Simulator Started (Enter hex bytes)" << std::endl;
+    // Start TCP server (DoIP-like)
+    if (!TcpTransport::Init(13400))
+    {
+        std::cerr << "Failed to start TCP transport\n";
+        return -1;
+    }
+
+    std::cout << "VECU ready for diagnostic requests\n";
 
     while (true)
     {
-        std::cout << "REQ> ";
+        Buffer request = TcpTransport::Receive();
+        if (request.empty())
+        {
+            continue;
+        }
 
-        Buffer request = Transport::Receive();
         Buffer response = Dcm::ProcessRequest(request);
-
-        std::cout << "RES> ";
-        Transport::Send(response);
+        TcpTransport::Send(response);
     }
 
+    TcpTransport::Shutdown();
     return 0;
 }
+
