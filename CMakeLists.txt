@@ -14,5 +14,6 @@ add_executable(dcm_simulator
     src/Dcm_Services.cpp
     src/Transport.cpp
     src/EcuApp.cpp
+    src/DoIP.cpp
     src/TcpTransport.cpp
 )

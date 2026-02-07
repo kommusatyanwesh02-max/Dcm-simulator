@@ -1,4 +1,5 @@
 #include "TcpTransport.h"
+#include "DoIP.h"
 #include <iostream>
 
 #ifdef _WIN32
@@ -70,21 +71,22 @@ bool TcpTransport::Init(uint16_t port)
 
 Buffer TcpTransport::Receive()
 {
-    Buffer buffer;
-    uint8_t data[256]{};
+    Buffer tcpBuffer;
+    uint8_t data[512]{};
 
     int received = recv(clientSocket, reinterpret_cast<char*>(data), sizeof(data), 0);
     if (received <= 0)
     {
-        return buffer;
+        return tcpBuffer;
     }
 
     for (int i = 0; i < received; ++i)
     {
-        buffer.push_back(data[i]);
+        tcpBuffer.push_back(data[i]);
     }
 
-    return buffer;
+    // Decode DoIP frame to get UDS payload
+    return DoIP::Decode(tcpBuffer);
 }
 
 void TcpTransport::Send(const Buffer& response)
@@ -92,9 +94,11 @@ void TcpTransport::Send(const Buffer& response)
     if (clientSocket < 0)
         return;
 
+    Buffer doipFrame = DoIP::Encode(response);
+
     send(clientSocket,
-         reinterpret_cast<const char*>(response.data()),
-         static_cast<int>(response.size()),
+         reinterpret_cast<const char*>(doipFrame.data()),
+         static_cast<int>(doipFrame.size()),
          0);
 }
 
